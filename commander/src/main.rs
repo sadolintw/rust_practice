@@ -85,8 +85,9 @@ fn main() -> std::io::Result<()> {
     // print_hashmap(map);
     map.insert("3", "hello");
     // map = HASHMAP.lock().unwrap();
-    // print_hashmap(map);
     drop(map);
+    print_hashmap();
+    
     println!("");
     bash();
     println!("");
