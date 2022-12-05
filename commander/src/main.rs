@@ -1,11 +1,26 @@
 #![allow(unused)]
+#[macro_use]
+extern crate lazy_static;
+use std::collections::HashMap;
 use std::env;
 use std::fs;
 use std::fs::File;
 use std::io::prelude::*;
-use std::io::{ self, BufRead };
+use std::io::{self, BufRead};
 use std::path::Path;
 use std::process::Command;
+use std::sync::Mutex;
+use std::sync::MutexGuard;
+
+lazy_static! {
+    static ref HASHMAP: Mutex<HashMap<&'static str, &'static str>> = {
+        let mut m = HashMap::new();
+        m.insert("0", "foo");
+        m.insert("1", "bar");
+        m.insert("2", "baz");
+        Mutex::new(m)
+    };
+}
 
 fn write() -> std::io::Result<()> {
     println!("write");
@@ -15,7 +30,10 @@ fn write() -> std::io::Result<()> {
     Ok(())
 }
 
-fn read_lines<P>(filename: P) -> io::Result<io::Lines<io::BufReader<File>>> where P: AsRef<Path> {
+fn read_lines<P>(filename: P) -> io::Result<io::Lines<io::BufReader<File>>>
+where
+    P: AsRef<Path>,
+{
     let file = File::open(filename)?;
     Ok(io::BufReader::new(file).lines())
 }
@@ -49,12 +67,33 @@ fn bash() -> std::io::Result<()> {
     Ok(())
 }
 
+// fn print_hashmap(map: MutexGuard<HashMap<&'static str, &'static str>>) -> std::io::Result<()> {
+fn print_hashmap() -> std::io::Result<()> {
+    println!("print_hashmap");
+    let mut map = HASHMAP.lock().unwrap();
+    for (key, value) in &*map {
+        println!("{} / {}", key, value);
+    }
+    Ok(())
+}
+
 fn main() -> std::io::Result<()> {
     let args: Vec<String> = env::args().collect();
     dbg!(args);
+    print_hashmap();
+    let mut map = HASHMAP.lock().unwrap();
+    // print_hashmap(map);
+    map.insert("3", "hello");
+    // map = HASHMAP.lock().unwrap();
+    // print_hashmap(map);
+    drop(map);
+    println!("");
     bash();
+    println!("");
     write();
     println!("");
     handle_read_lines();
+    
+    
     Ok(())
 }
