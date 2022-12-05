@@ -3,11 +3,12 @@ use std::env;
 use std::fs;
 use std::fs::File;
 use std::io::prelude::*;
-use std::process::Command;
 use std::io::{self, BufRead};
 use std::path::Path;
+use std::process::Command;
 
 fn write() -> std::io::Result<()> {
+    println!("write");
     fs::create_dir_all("./temp")?;
     let mut file = File::create("./temp/foo.txt")?;
     file.write_all(b"Hello, world!")?;
@@ -22,7 +23,10 @@ where
     Ok(io::BufReader::new(file).lines())
 }
 
-fn handle_read_lines() -> std::io::Result<()>{
+
+
+fn handle_read_lines() -> std::io::Result<()> {
+    println!("handle_read_lines");
     if let Ok(lines) = read_lines("./config") {
         // Consumes the iterator, returns an (Optional) String
         for line in lines {
@@ -35,10 +39,14 @@ fn handle_read_lines() -> std::io::Result<()>{
 }
 
 fn bash() -> std::io::Result<()> {
-    Command::new("bash")
-    .args(&["-c", "echo hello"])
-    .spawn()
-    .expect("echo command failed to start");
+    println!("bash");
+    Command::new("sh")
+            .arg("-c")
+            .arg("echo hello")
+            .spawn()?
+            .wait()
+            .expect("failed to execute process");
+    // println!("{}", output.stdout.as_slice())
 
     Ok(())
 }
@@ -49,6 +57,8 @@ fn main() -> std::io::Result<()> {
     bash();
     write();
     handle_read_lines();
-
+    bash();
+    write();
+    handle_read_lines();
     Ok(())
 }
