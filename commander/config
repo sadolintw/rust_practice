@@ -1,2 +1,11 @@
-test1
-test2
+keyFile=~/dev/gcp/iam-cud.json
+#rest or gcloud
+mode=rest
+#project or org
+architectureLevel=project
+projectId=andylab-343008
+permissionGroupSize=1500
+#generate roles like role_0, role_1, ...
+customRoleId=sado_test_role
+customRoleTitle=sado test role
+customRoleDesc=sado test role

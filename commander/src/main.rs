@@ -3,7 +3,7 @@ use std::env;
 use std::fs;
 use std::fs::File;
 use std::io::prelude::*;
-use std::io::{self, BufRead};
+use std::io::{ self, BufRead };
 use std::path::Path;
 use std::process::Command;
 
@@ -15,15 +15,10 @@ fn write() -> std::io::Result<()> {
     Ok(())
 }
 
-fn read_lines<P>(filename: P) -> io::Result<io::Lines<io::BufReader<File>>>
-where
-    P: AsRef<Path>,
-{
+fn read_lines<P>(filename: P) -> io::Result<io::Lines<io::BufReader<File>>> where P: AsRef<Path> {
     let file = File::open(filename)?;
     Ok(io::BufReader::new(file).lines())
 }
-
-
 
 fn handle_read_lines() -> std::io::Result<()> {
     println!("handle_read_lines");
@@ -31,7 +26,10 @@ fn handle_read_lines() -> std::io::Result<()> {
         // Consumes the iterator, returns an (Optional) String
         for line in lines {
             if let Ok(item) = line {
-                println!("{}", item);
+                if !item.starts_with("#") {
+                    let vec: Vec<&str> = item.split("=").collect();
+                    println!("{:?} {} {}", vec, vec[0], vec[1]);
+                }
             }
         }
     }
@@ -41,13 +39,13 @@ fn handle_read_lines() -> std::io::Result<()> {
 fn bash() -> std::io::Result<()> {
     println!("bash");
     Command::new("sh")
-            .arg("-c")
-            .arg("echo hello")
-            .spawn()?
-            .wait()
-            .expect("failed to execute process");
+        .arg("-c")
+        .arg("echo hello")
+        .spawn()?
+        .wait()
+        // .output()
+        .expect("failed to execute process");
     // println!("{}", output.stdout.as_slice())
-
     Ok(())
 }
 
@@ -56,9 +54,7 @@ fn main() -> std::io::Result<()> {
     dbg!(args);
     bash();
     write();
-    handle_read_lines();
-    bash();
-    write();
+    println!("");
     handle_read_lines();
     Ok(())
 }

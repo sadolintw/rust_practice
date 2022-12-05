@@ -1,6 +1,6 @@
 # Build and Run
 ```
-cargo build && cargo run
+clear && cargo build && cargo run
 ```
 
 
